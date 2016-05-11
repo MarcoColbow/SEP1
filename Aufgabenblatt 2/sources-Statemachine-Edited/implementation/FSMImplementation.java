@@ -6,6 +6,7 @@ import boundaryclasses.IHumiditySensor;
 import boundaryclasses.IManualControl;
 import boundaryclasses.IOpticalSignals;
 import boundaryclasses.IPump;
+import boundaryclasses.ITimer;
 import fsm.IFSM;
 import test.GateStub;
 import test.HumidifierStub;
@@ -13,6 +14,7 @@ import test.HumiditySensorStub;
 import test.ManualControlStub;
 import test.OpticalSignalsStub;
 import test.PumpStub;
+import test.TimerStub;
 
 public class FSMImplementation implements IFSM {
 	private FSMState state;
@@ -23,6 +25,7 @@ public class FSMImplementation implements IFSM {
 	private IHumiditySensor sensor;
 	private IHumidifier humidifier;
 	private IManualControl operatorPanel;
+	private ITimer timer;
 	private final double upperBound;
 	private final double lowerBound;
 
@@ -38,6 +41,7 @@ public class FSMImplementation implements IFSM {
 		this.operatorPanel = operatorPanel;
 		upperBound = 60;
 		lowerBound = 20;
+		this.timer = new TimerStub();
 	}
 
 	/**
@@ -85,7 +89,13 @@ public class FSMImplementation implements IFSM {
 					this.pumpA.sendActivate();
 					this.pumpB.sendActivate();
 				}
-				//Timer here, 5s
+				
+				timer.startTime(5);
+				
+				while (!timer.isTimerExpired())
+					if (pumpA.receivedActivated() && pumpB.receivedActivated())
+						break;
+				
 				if (pumpA.receivedActivated() && pumpB.receivedActivated()) {
 					while (aktuellHumid > this.upperBound) {
 						aktuellHumid = aktuellHumid - 5;
