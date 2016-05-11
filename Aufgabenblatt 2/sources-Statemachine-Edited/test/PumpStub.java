@@ -38,12 +38,11 @@ public class PumpStub implements IPump {
 	
 	private void waitPositive()
 	{
-		try { Thread.sleep((long)((Math.random()*1000)+1)); } 
+		try { Thread.sleep((long)((Math.random()*6000)+1000)); } 
 		catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		pumpactivated = true;
-		System.out.println("Pump activated!");
 	}
 
 }

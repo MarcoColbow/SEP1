@@ -6,8 +6,13 @@ public class ManualControlStub implements IManualControl {
 
 	@Override
 	public boolean receivedAcknowledgement() {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 }
