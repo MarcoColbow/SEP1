@@ -94,18 +94,15 @@ public class FSMImplementation implements IFSM {
 					System.out.println("ERROR");
 					errorflag = true;
 				}
-				if (!errorflag) {
-					this.pumpA.sendDeactivate();
-					this.pumpB.sendDeactivate();
-					this.gate.sendOpenGate();
-					this.signals.switchLampBOff();
-				} else {
+				this.pumpA.sendDeactivate();
+				this.pumpB.sendDeactivate();
+				this.gate.sendOpenGate();
+				this.signals.switchLampBOff();
+				if (errorflag) {
 					while (!this.operatorPanel.receivedAcknowledgement()) {
+						// Warte auf System Bestätigung}
 					}
-
-					// Warte auf System Bestätigung
 				}
-
 				break;
 			}
 
