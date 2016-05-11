@@ -65,6 +65,9 @@ public class FSMImplementation implements IFSM {
 		boolean errorflag = false;
 		// TODO Auto-generated method stub
 		while (true) {
+			
+
+			
 			double aktuellHumid = this.sensor.getHumidity();
 			switch (state(aktuellHumid)) {
 			case HumidityOkay:
@@ -94,7 +97,11 @@ public class FSMImplementation implements IFSM {
 				
 				while (!timer.isTimerExpired())
 					if (pumpA.receivedActivated() && pumpB.receivedActivated())
+					{
+						System.out.println("Pumps succesfull activated!");
 						break;
+					}
+					
 				
 				if (pumpA.receivedActivated() && pumpB.receivedActivated()) {
 					while (aktuellHumid > this.upperBound) {
@@ -102,7 +109,7 @@ public class FSMImplementation implements IFSM {
 						System.out.println("Aktuell Humid is: " + aktuellHumid);
 					}
 				} else {
-					System.out.println("ERROR");
+					System.out.println("ERROR, DEACTIVATE PUMPS");
 					errorflag = true;
 				}
 				this.pumpA.sendDeactivate();
@@ -116,7 +123,15 @@ public class FSMImplementation implements IFSM {
 				}
 				break;
 			}
-
+			try {
+				System.out.println("----------");
+				Thread.sleep(1000);
+				System.out.println();
+				System.out.println("----------");
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
