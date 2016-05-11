@@ -1,5 +1,7 @@
 package test;
 
+import java.util.Random;
+
 import boundaryclasses.IGate;
 import boundaryclasses.IPump;
 
@@ -8,9 +10,16 @@ public class PumpStub implements IPump {
 
 	@Override
 	public void sendActivate() {
-		// TODO Auto-generated method stub {
-		System.out.println("Pump activate");
-		pumpactivated = true;
+		System.out.println("Try Pump activate");
+		
+		new Thread() {
+		    public void run() {
+		        waitPositive();
+		    }
+		    
+		}.start();
+
+
 	}
 
 	@Override
@@ -24,6 +33,17 @@ public class PumpStub implements IPump {
 	public boolean receivedActivated() {
 		// TODO Auto-generated method stub
 		return pumpactivated;
+	}	
+	
+	
+	private void waitPositive()
+	{
+		try { Thread.sleep((long)((Math.random()*1000)+1)); } 
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		pumpactivated = true;
+		System.out.println("Pump activated!");
 	}
 
 }
