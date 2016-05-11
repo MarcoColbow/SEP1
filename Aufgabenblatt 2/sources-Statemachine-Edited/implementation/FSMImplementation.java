@@ -85,6 +85,7 @@ public class FSMImplementation implements IFSM {
 					this.pumpA.sendActivate();
 					this.pumpB.sendActivate();
 				}
+				//Timer here, 5s
 				if (pumpA.receivedActivated() && pumpB.receivedActivated()) {
 					while (aktuellHumid > this.upperBound) {
 						aktuellHumid = aktuellHumid - 5;
@@ -100,7 +101,7 @@ public class FSMImplementation implements IFSM {
 				this.signals.switchLampBOff();
 				if (errorflag) {
 					while (!this.operatorPanel.receivedAcknowledgement()) {
-						// Warte auf System Bestätigung}
+						// Warte auf System Bestï¿½tigung}
 					}
 				}
 				break;
