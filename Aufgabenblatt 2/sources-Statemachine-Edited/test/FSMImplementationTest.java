@@ -1,23 +1,8 @@
 package test;
-/**
- * Test Framework for testing the FSM from Practice 3
- * @author Thomas Lehmann
- * @version 2015-11-18
- */
-import static org.junit.Assert.*;
 import fsm.IFSM;
 import implementation.FSMImplementation;
-import implementation.FSMState;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import boundaryclasses.IGate;
-import boundaryclasses.IHumidifier;
-import boundaryclasses.IHumiditySensor;
-import boundaryclasses.IManualControl;
-import boundaryclasses.IOpticalSignals;
-import boundaryclasses.IPump;
 
 public class FSMImplementationTest {
 	private PumpStub pumpA;
@@ -43,8 +28,11 @@ public class FSMImplementationTest {
 	}
 	
 	@Test
-	public void testPath() {
+	public void testLongestPath() {
+		pumpA.neverGoOnline();
+		HumiditySensorStub.forceHumidity(100);
 
+		uut.evaluate();
 	}
 
 }

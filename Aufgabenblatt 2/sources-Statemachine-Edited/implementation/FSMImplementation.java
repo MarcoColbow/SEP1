@@ -17,7 +17,6 @@ import test.PumpStub;
 import test.TimerStub;
 
 public class FSMImplementation implements IFSM {
-	private FSMState state;
 	private IPump pumpA;
 	private IPump pumpB;
 	private IGate gate;
@@ -31,7 +30,6 @@ public class FSMImplementation implements IFSM {
 
 	public FSMImplementation(IPump pumpA, IPump pumpB, IGate gate, IOpticalSignals signals, IHumidifier humidifier,
 			IHumiditySensor sensor, IManualControl operatorPanel) {
-		this.state = FSMState.HumidityOkay;
 		this.pumpA = pumpA;
 		this.pumpB = pumpB;
 		this.gate = gate;
@@ -61,68 +59,77 @@ public class FSMImplementation implements IFSM {
 	}
 
 	@Override
-	public void evaluate() {
+	public void evaluate() 
+	{
 		boolean errorflag = false;
-		// TODO Auto-generated method stub
-		while (true) {
-			
 
+		double aktuellHumid = this.sensor.getHumidity();
+		switch (state(aktuellHumid)) {
+		case HumidityOkay:
+			System.out.println("Humidity OK");
+			break;
+		case HumidityLow:
+			System.out.println("Humidity too low");
+			this.humidifier.sendSprayOn();
+			this.signals.switchLampAOn();
+			while (aktuellHumid < this.lowerBound) {
+				aktuellHumid = aktuellHumid + 5;
+				System.out.println("Aktuell Humid is: " + aktuellHumid);
+			}
+			this.humidifier.sendSprayOff();
+			this.signals.switchLampAOff();
+			break;
+		case HumidityHigh:
+			System.out.println("Humidity too high");
+			this.gate.sendCloseGate();
+			this.signals.switchLampBOn();
+			while (!this.gate.receivedGateClosed()) {
+				//wait until Gate closed
+			}
 			
-			double aktuellHumid = this.sensor.getHumidity();
-			switch (state(aktuellHumid)) {
-			case HumidityOkay:
-				System.out.println("Humidity OK");
-				break;
-			case HumidityLow:
-				System.out.println("Humidity too low");
-				this.humidifier.sendSprayOn();
-				this.signals.switchLampAOn();
-				while (aktuellHumid < this.lowerBound) {
-					aktuellHumid = aktuellHumid + 5;
+			this.pumpA.sendActivate();
+			this.pumpB.sendActivate();
+
+			timer.startTime(5);
+			
+			while (!timer.isTimerExpired())
+				if (pumpA.receivedActivated() && pumpB.receivedActivated())
+				{
+					System.out.println("Pumps succesfull activated!");
+					break;
+				}
+				
+			
+			if (pumpA.receivedActivated() && pumpB.receivedActivated()) {
+				while (aktuellHumid > this.upperBound) {
+					aktuellHumid = aktuellHumid - 5;
 					System.out.println("Aktuell Humid is: " + aktuellHumid);
 				}
-				this.humidifier.sendSprayOff();
-				this.signals.switchLampAOff();
-				break;
-			case HumidityHigh:
-				System.out.println("Humidity too high");
-				this.gate.sendCloseGate();
-				this.signals.switchLampBOn();
-				if (this.gate.receivedGateClosed()) {
-					this.pumpA.sendActivate();
-					this.pumpB.sendActivate();
-				}
-				
-				timer.startTime(5);
-				
-				while (!timer.isTimerExpired())
-					if (pumpA.receivedActivated() && pumpB.receivedActivated())
-					{
-						System.out.println("Pumps succesfull activated!");
-						break;
-					}
-					
-				
-				if (pumpA.receivedActivated() && pumpB.receivedActivated()) {
-					while (aktuellHumid > this.upperBound) {
-						aktuellHumid = aktuellHumid - 5;
-						System.out.println("Aktuell Humid is: " + aktuellHumid);
-					}
-				} else {
-					System.out.println("ERROR, DEACTIVATE PUMPS");
-					errorflag = true;
-				}
-				this.pumpA.sendDeactivate();
-				this.pumpB.sendDeactivate();
-				this.gate.sendOpenGate();
-				this.signals.switchLampBOff();
-				if (errorflag) {
-					while (!this.operatorPanel.receivedAcknowledgement()) {
-						// Warte auf System Best�tigung}
-					}
-				}
-				break;
+			} else {
+				System.out.println("ERROR, DEACTIVATE PUMPS");
+				errorflag = true;
 			}
+			this.pumpA.sendDeactivate();
+			this.pumpB.sendDeactivate();
+			this.gate.sendOpenGate();
+			this.signals.switchLampBOff();
+			if (errorflag) {
+				while (!this.operatorPanel.receivedAcknowledgement()) {
+					// Warte auf System Best�tigung}
+				}
+			}
+			break;
+		}
+		
+	}
+
+	public static void main(String[] args) {
+		FSMImplementation test = new FSMImplementation(new PumpStub(), new PumpStub(), new GateStub(),
+				new OpticalSignalsStub(), new HumidifierStub(), new HumiditySensorStub(), new ManualControlStub());
+		
+		while (true) {
+			test.evaluate();
+
 			try {
 				System.out.println("----------");
 				Thread.sleep(1000);
@@ -133,11 +140,5 @@ public class FSMImplementation implements IFSM {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public static void main(String[] args) {
-		FSMImplementation test = new FSMImplementation(new PumpStub(), new PumpStub(), new GateStub(),
-				new OpticalSignalsStub(), new HumidifierStub(), new HumiditySensorStub(), new ManualControlStub());
-		test.evaluate();
 	}
 }

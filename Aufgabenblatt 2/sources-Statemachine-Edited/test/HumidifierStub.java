@@ -1,7 +1,6 @@
 package test;
 
 import boundaryclasses.IHumidifier;
-import boundaryclasses.IOpticalSignals;
 
 public class HumidifierStub implements IHumidifier {
 

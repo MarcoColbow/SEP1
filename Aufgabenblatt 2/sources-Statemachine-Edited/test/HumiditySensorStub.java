@@ -4,10 +4,19 @@ import boundaryclasses.IHumiditySensor;
 
 public class HumiditySensorStub implements IHumiditySensor {
 
+	static double _forceHumidity = 0;
+
 	@Override
 	public double getHumidity() {
-		// TODO Auto-generated method stub
-		return Math.random() * 100;
+		if (_forceHumidity == 0)
+			return Math.random() * 100;
+		else
+			return _forceHumidity;
+	}
+
+	public static void forceHumidity(double forceValue)
+	{
+		_forceHumidity = forceValue;
 	}
 
 }

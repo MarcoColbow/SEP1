@@ -1,7 +1,6 @@
 package test;
 
 import boundaryclasses.IGate;
-import boundaryclasses.IOpticalSignals;
 
 public class GateStub implements IGate {
 	boolean gateClosed = false;
