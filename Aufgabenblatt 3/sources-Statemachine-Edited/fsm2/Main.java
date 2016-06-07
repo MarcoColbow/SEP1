@@ -20,6 +20,7 @@ public class Main {
     public static void main(String[] args) {
 		pumpA = new PumpStub();
 		pumpB = new PumpStub();
+		
 		gate = new GateStub();
 		signals = new OpticalSignalsStub();
 		sensor = new HumiditySensorStub();

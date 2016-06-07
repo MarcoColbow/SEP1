@@ -34,8 +34,8 @@ public class Steuerung {
 		states.put("HumidityLow",                 new HumidityLow());
 		states.put("PumpenEinschalten",           new PumpenEinschalten());
 		states.put("TorOeffnenPumpenAbschalten",  new TorOeffnenPumpenAbschalten());
-		states.put("TorSchliessen",                new TorSchliessen());
-		states.put("TorZuPumpenAn",               new TorZuPumpeAn());
+		states.put("TorSchliessen",               new TorSchliessen());
+		states.put("TorZuPumpeAn",	              new TorZuPumpeAn());
 		states.put("Ueberwache",                  new Ueberwache());
         this.pumpA = pumpA;
         this.pumpB = pumpB;

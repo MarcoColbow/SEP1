@@ -15,10 +15,11 @@ private ITimer timer = new TimerStub();
         timer.startTime(5);
         
         while (!timer.isTimerExpired())
-        if (sensor.getPumpA().receivedActivated() && sensor.getPumpB().receivedActivated())
-        {
-            sensor.changeState("TorZuPumpeAn");
-        }
-        sensor.changeState("FehlerFestgestellt");
+	        if (sensor.getPumpA().receivedActivated() && sensor.getPumpB().receivedActivated())
+	        {
+	            sensor.changeState("TorZuPumpeAn");
+	            return;
+	        }
+	        sensor.changeState("FehlerFestgestellt");
     }
 }
