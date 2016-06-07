@@ -10,7 +10,7 @@ import boundaryclasses.IManualControl;
 import boundaryclasses.IOpticalSignals;
 import boundaryclasses.IPump;
 
-public class Sensor {
+public class Steuerung {
 	private boolean errorFlag;
 	private State current;
 	private Map<String, State> states;
@@ -25,7 +25,7 @@ public class Sensor {
     private final double lowerBound;
 	
 	
-	public Sensor(IPump pumpA, IPump pumpB, IGate gate, IOpticalSignals signals, IHumidifier humidifier,
+	public Steuerung(IPump pumpA, IPump pumpB, IGate gate, IOpticalSignals signals, IHumidifier humidifier,
             IHumiditySensor sensor, IManualControl operatorPanel){
 		errorFlag = false;
 		current = null;
@@ -35,7 +35,7 @@ public class Sensor {
 		states.put("HumidityLow",                 new HumidityLow());
 		states.put("PumpenEinschalten",           new PumpenEinschalten());
 		states.put("TorOeffnenPumpenAbschalten",  new TorOeffnenPumpenAbschalten());
-		states.put("TorSchlieﬂen",                new TorSchliessen());
+		states.put("TorSchliessen",                new TorSchliessen());
 		states.put("TorZuPumpenAn",               new TorZuPumpeAn());
 		states.put("Ueberwache",                  new Ueberwache());
         this.pumpA = pumpA;

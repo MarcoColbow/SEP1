@@ -8,7 +8,7 @@ private ITimer timer = new TimerStub();
 
 
     @Override
-    public void doAction(Sensor sensor){
+    public void doAction(Steuerung sensor){
         sensor.getPumpA().sendActivate();
         sensor.getPumpB().sendActivate();
         

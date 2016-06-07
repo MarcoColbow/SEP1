@@ -10,9 +10,9 @@ public class Ueberwache extends State {
     }
     
     @Override
-    public void doAction(Sensor sensor){
+    public void doAction(Steuerung sensor){
         if(humiditySensor.getHumidity() > sensor.getUpperBound()){
-            sensor.changeState("TorSchlieﬂen");
+            sensor.changeState("TorSchliessen");
         }
         else if (humiditySensor.getHumidity() < sensor.getLowerBound()){
             sensor.changeState("HumidityLow");
