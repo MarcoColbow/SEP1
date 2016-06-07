@@ -102,6 +102,10 @@ public class Steuerung {
     public void setErrorFlag(boolean flag) {
         errorFlag = flag;
     }
+    
+    public boolean getErrorFlag() {
+    	return errorFlag;
+    }
 	
 	
 }
