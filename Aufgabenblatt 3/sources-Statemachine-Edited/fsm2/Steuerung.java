@@ -28,7 +28,6 @@ public class Steuerung {
 	public Steuerung(IPump pumpA, IPump pumpB, IGate gate, IOpticalSignals signals, IHumidifier humidifier,
             IHumiditySensor sensor, IManualControl operatorPanel){
 		errorFlag = false;
-		current = null;
 		states = new HashMap<>();
 		states.put("Fehler",                      new Fehler());
 		states.put("FehlerFestgestellt",          new FehlerFestgestellt());
@@ -47,10 +46,11 @@ public class Steuerung {
         this.operatorPanel = operatorPanel;
         upperBound = 60;
         lowerBound = 20;
+        changeState("Ueberwache");
 	}
 	
 	public void changeState(String stateKey){
-        System.out.printf("Zustand: %s", stateKey);
+        System.out.printf("Zustand: %s\n", stateKey);
 	    current = states.get(stateKey);
 	}
 	

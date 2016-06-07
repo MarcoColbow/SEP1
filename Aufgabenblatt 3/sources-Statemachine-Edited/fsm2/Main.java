@@ -24,7 +24,7 @@ public class Main {
 		signals = new OpticalSignalsStub();
 		sensor = new HumiditySensorStub();
 		humidifier = new HumidifierStub();
-    	
+    	operatorPanel = new ManualControlStub();
     	
         Steuerung steuerung = new Steuerung(pumpA, pumpB, gate, signals, humidifier, sensor, operatorPanel);
         
