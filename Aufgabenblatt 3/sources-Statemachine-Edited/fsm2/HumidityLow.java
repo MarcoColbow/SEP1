@@ -10,7 +10,7 @@ public class HumidityLow extends State {
     	
     	double value = sensor.getSensor().getHumidity();
     	
-    	while (value >= sensor.getLowerBound())
+    	while (value < sensor.getLowerBound())
     		value += 5;
     	
     	sensor.getSignals().switchLampAOff();
