@@ -52,7 +52,6 @@ public class Steuerung {
 	public void changeState(String stateKey){
         System.out.printf("Zustand: %s", stateKey);
 	    current = states.get(stateKey);
-	    current.doAction(this);
 	}
 	
 	public double getUpperBound(){
