@@ -13,4 +13,10 @@ public interface IManualControl {
 	 * @return whether the message has been received or not.
 	 */
 	public boolean receivedAcknowledgement();
+	
+	/**
+	 * Pushs the Button on the operator panel to get out of the Error State. Also it corresponds
+	 * with receivedAcknowledgement.
+	 */
+	public void pressButton();
 }
