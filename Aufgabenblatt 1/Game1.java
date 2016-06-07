@@ -1,10 +1,10 @@
-public class Game {
+public class Game1 {
 	public StringBuffer board;
 	private final int NOMOVE = -1;
 
-	public Game(String s) {board = new StringBuffer(s);}
+	public Game1(String s) {board = new StringBuffer(s);}
 
-	public Game(StringBuffer s, int position, char player) {
+	public Game1(StringBuffer s, int position, char player) {
 		board = new StringBuffer();
 		board.append(s);
 		board.setCharAt(position, player);
@@ -13,7 +13,7 @@ public class Game {
 	public int move(char player) {
 		for (int move = 0; move < 9; move++) {
 			if (isFreePosition(move)) {
-				Game game = play(move, player);
+				Game1 game = play(move, player);
 				if (game.winner() == player) 
 					return move;
 			}
@@ -27,8 +27,8 @@ public class Game {
 		return NOMOVE;
 	}
 
-	public Game play(int move, char player) {
-		return new Game(this.board, move, player);
+	public Game1 play(int move, char player) {
+		return new Game1(this.board, move, player);
 	}
 
 	public char winner() {
