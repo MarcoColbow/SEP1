@@ -1,13 +1,13 @@
 package fsm2;
 
 public class TorZuPumpeAn extends State {
-    
+    private final int PUMP_INTENSITY = 5;
     @Override
-    public void doAction(Steuerung sensor){
-        double aktuellHumid = sensor.getSensor().getHumidity();
-        while (aktuellHumid > sensor.getUpperBound()) {
-            aktuellHumid = aktuellHumid - 5;
+    public void doAction(Steuerung steuerung){
+        double aktuellHumid = steuerung.getSensor().getHumidity();
+        while (aktuellHumid > steuerung.getUpperBound()) {
+            aktuellHumid = aktuellHumid - PUMP_INTENSITY;
         }
-        sensor.changeState("TorOeffnenPumpenAbschalten");
+        steuerung.changeState(States.TOR_OEFFNEN_PUMPEN_ABSCHALTEN);
     }
 }

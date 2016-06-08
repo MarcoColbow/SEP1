@@ -3,11 +3,11 @@ package fsm2;
 public class TorSchliessen extends State {
     
     @Override
-    public void doAction(Steuerung sensor){
-        sensor.getGate().sendCloseGate();
-        sensor.getSignals().switchLampBOn();
-        while(!sensor.getGate().receivedGateClosed()){}
-        sensor.getSignals().switchLampBOff();
-        sensor.changeState("PumpenEinschalten");
+    public void doAction(Steuerung steuerung){
+        steuerung.getGate().sendCloseGate();
+        steuerung.getSignals().switchLampBOn();
+        while(!steuerung.getGate().receivedGateClosed()){}
+        steuerung.getSignals().switchLampBOff();
+        steuerung.changeState(States.PUMPEN_EINSCHALTEN);
     }
 }

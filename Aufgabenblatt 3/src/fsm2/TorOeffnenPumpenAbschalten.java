@@ -3,20 +3,20 @@ package fsm2;
 public class TorOeffnenPumpenAbschalten extends State {
 
 	@Override
-	public void doAction(Steuerung sensor) {
-		sensor.getPumpA().sendDeactivate();
-		sensor.getPumpB().sendDeactivate();
-		sensor.getGate().sendOpenGate();
-		sensor.getSignals().switchLampBOn();
-		while(!sensor.getGate().receivedGateOpen()){}
-		sensor.getSignals().switchLampBOff();
-		if (sensor.getErrorFlag())
+	public void doAction(Steuerung steuerung) {
+		steuerung.getPumpA().sendDeactivate();
+		steuerung.getPumpB().sendDeactivate();
+		steuerung.getGate().sendOpenGate();
+		steuerung.getSignals().switchLampBOn();
+		while(!steuerung.getGate().receivedGateOpen()){}
+		steuerung.getSignals().switchLampBOff();
+		if (steuerung.getErrorFlag())
 		{
-			sensor.changeState("Fehler");
+			steuerung.changeState(States.FEHLER);
 		}
 		else
 		{
-			sensor.changeState("Ueberwache");
+			steuerung.changeState(States.UEBERWACHE);
 		}
 	}
 }

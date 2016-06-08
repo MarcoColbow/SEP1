@@ -5,6 +5,7 @@ import boundaryclasses.IPump;
 public class PumpStub implements IPump {
 	private boolean _pumpactivated = false;
 	private boolean _neverGoOnline = false;
+	private boolean _forceActivation = false;
 
 
 
@@ -16,18 +17,31 @@ public class PumpStub implements IPump {
 	@Override
 	public void sendActivate() {
 		System.out.println("Try Pump activate");
-		
 		if (!_neverGoOnline)
 		{
-			new Thread() {
-			    public void run() {
-			        waitPositive();
-			    }
-			    
-			}.start();
+			if(Math.random() > 0.5 || _forceActivation )
+			{
+				_pumpactivated = true;
+			}
+			else
+			{
+				_pumpactivated = false;
+			}
+		}
+		else
+		{
+			System.out.println("Pump activation impossible");
 		}
 
 
+	}
+
+	/**
+	 * Needed for White-Box testing
+	 * @param _forceActivation
+	 */
+	public void set_forceActivation(boolean _forceActivation) {
+		this._forceActivation = _forceActivation;
 	}
 
 	@Override
@@ -39,16 +53,5 @@ public class PumpStub implements IPump {
 	@Override
 	public boolean receivedActivated() {
 		return _pumpactivated;
-	}	
-	
-	
-	private void waitPositive()
-	{
-		try { Thread.sleep((long)((Math.random()*4000)+1000)); } 
-		catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		_pumpactivated = true;
 	}
-
 }

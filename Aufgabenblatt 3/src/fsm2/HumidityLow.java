@@ -1,22 +1,22 @@
 package fsm2;
 
 public class HumidityLow extends State {
-    
+    private final int SPRAY_INTENSITY = 5;
     @Override
-    public void doAction(Steuerung sensor){
+    public void doAction(Steuerung steuerung){
         
-    	sensor.getSignals().switchLampAOn();
-    	sensor.getHumidifier().sendSprayOn();
+    	steuerung.getSignals().switchLampAOn();
+    	steuerung.getHumidifier().sendSprayOn();
     	
-    	double value = sensor.getSensor().getHumidity();
+    	double value = steuerung.getSensor().getHumidity();
     	
-    	while (value < sensor.getLowerBound())
-    		value += 5;
+    	while (value < steuerung.getLowerBound())
+    		value += SPRAY_INTENSITY;
     	
-    	sensor.getSignals().switchLampAOff();
-    	sensor.getHumidifier().sendSprayOff();
+    	steuerung.getSignals().switchLampAOff();
+    	steuerung.getHumidifier().sendSprayOff();
     	
-    	sensor.changeState("Ueberwache");
+    	steuerung.changeState(States.UEBERWACHE);
     	
     }
 }

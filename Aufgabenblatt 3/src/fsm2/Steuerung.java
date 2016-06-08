@@ -1,8 +1,5 @@
 package fsm2;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import boundaryclasses.IGate;
 import boundaryclasses.IHumidifier;
 import boundaryclasses.IHumiditySensor;
@@ -11,48 +8,39 @@ import boundaryclasses.IOpticalSignals;
 import boundaryclasses.IPump;
 
 public class Steuerung {
+	private final State states [] = {new Ueberwache(), new HumidityLow(), new TorSchliessen(), new PumpenEinschalten(),
+			  new FehlerFestgestellt(), new TorZuPumpeAn(), new TorOeffnenPumpenAbschalten(), new Fehler(),
+			  new Dummy()};
+    private final double upperBound;
+    private final double lowerBound;
 	private boolean errorFlag;
 	private State current;
-	private Map<String, State> states;
 	private IPump pumpA;
     private IPump pumpB;
     private IGate gate;
     private IOpticalSignals signals;
-    private IHumiditySensor sensor;
+    private IHumiditySensor steuerung;
     private IHumidifier humidifier;
     private IManualControl operatorPanel;
-    private final double upperBound;
-    private final double lowerBound;
-	
 	
 	public Steuerung(IPump pumpA, IPump pumpB, IGate gate, IOpticalSignals signals, IHumidifier humidifier,
             IHumiditySensor sensor, IManualControl operatorPanel){
 		errorFlag = false;
-		states = new HashMap<>();
-		states.put("Fehler",                      new Fehler());
-		states.put("FehlerFestgestellt",          new FehlerFestgestellt());
-		states.put("HumidityLow",                 new HumidityLow());
-		states.put("PumpenEinschalten",           new PumpenEinschalten());
-		states.put("TorOeffnenPumpenAbschalten",  new TorOeffnenPumpenAbschalten());
-		states.put("TorSchliessen",               new TorSchliessen());
-		states.put("TorZuPumpeAn",	              new TorZuPumpeAn());
-		states.put("Ueberwache",                  new Ueberwache());
-		states.put("Dummy",                       new Dummy());
         this.pumpA = pumpA;
         this.pumpB = pumpB;
         this.gate = gate;
         this.signals = signals;
-        this.sensor = sensor;
+        this.steuerung = sensor;
         this.humidifier = humidifier;
         this.operatorPanel = operatorPanel;
         upperBound = 60;
         lowerBound = 20;
-        changeState("Ueberwache");
+        changeState(States.UEBERWACHE);
 	}
 	
-	public void changeState(String stateKey){
-        System.out.printf("Aktueller Zustand: %s\n", stateKey);
-	    current = states.get(stateKey);
+	public void changeState(States state){
+        System.out.printf("Aktueller Zustand: %s\n", state);
+	    current = states[state.ordinal()];
 	}
 	
 	public double getUpperBound(){
@@ -84,7 +72,7 @@ public class Steuerung {
     }
 
     public IHumiditySensor getSensor() {
-        return sensor;
+        return steuerung;
     }
 
     public IHumidifier getHumidifier() {

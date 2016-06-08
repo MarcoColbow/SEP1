@@ -1,5 +1,5 @@
 package test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +10,23 @@ import boundaryclasses.IHumiditySensor;
 import boundaryclasses.IManualControl;
 import boundaryclasses.IOpticalSignals;
 import boundaryclasses.IPump;
-import fsm2.*;
+import fsm2.Dummy;
+import fsm2.Fehler;
+import fsm2.FehlerFestgestellt;
+import fsm2.HumidityLow;
+import fsm2.PumpenEinschalten;
+import fsm2.States;
+import fsm2.Steuerung;
+import fsm2.TorOeffnenPumpenAbschalten;
+import fsm2.TorSchliessen;
+import fsm2.TorZuPumpeAn;
+import fsm2.Ueberwache;
 
 public class FSMImplementationTest {
 	private final int VALUE_OVER_HUMIDITYMAX = 61;
 	private final int VALUE_LOWER_HUMIDITYMIN = 19;
 	private final int VALUE_BETWEEN_HUMIDITYLIMITS = 40;
-	private Steuerung sensor;
+	private Steuerung steuerung;
 	private IPump pumpA;
 	private IPump pumpB;
 	private IGate gate;
@@ -34,136 +44,139 @@ public class FSMImplementationTest {
 		humidifier = new HumidifierStub();
 		humiditySensor = new HumiditySensorStub();
 		operatorPanel = new ManualControlStub();
-		sensor = new Steuerung(pumpA,  pumpB,  gate,  signals, humidifier,  humiditySensor,  operatorPanel) ;
+		steuerung = new Steuerung(pumpA,  pumpB,  gate,  signals, humidifier,  humiditySensor,  operatorPanel);
+		HumiditySensorStub.forceHumidity(0);
 	}
+	
+	
+	/**
+	 * -----------------------------WHITEBOX - KONFORMANZ-----------------------------
+	 */
 	
 	/**
 	 * Transition from Ueberwache to HumidityLow
 	 */
 	@Test
-	public void testHumidityLowerMin() {
+	public void testHumidityLowerMinWhite() {
 		HumiditySensorStub.forceHumidity(VALUE_LOWER_HUMIDITYMIN);
-		sensor.changeState("Ueberwache");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof HumidityLow);
+		steuerung.changeState(States.UEBERWACHE);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof HumidityLow);
 	}
 	
 	/**
 	 * Transition from HumidityLow to Ueberwache
 	 */
 	@Test
-	public void testHumidityLowToUeberwache(){
+	public void testHumidityLowToUeberwacheWhite(){
 		HumiditySensorStub.forceHumidity(VALUE_LOWER_HUMIDITYMIN);
-		sensor.changeState("HumidityLow");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof Ueberwache);
+		steuerung.changeState(States.HUMIDITY_LOW);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Ueberwache);
 	}
 	
 	/**
 	 * Transition from Ueberwache to TorSchliessen
 	 */
 	@Test
-	public void testUeberwacheToTorSchliessen(){
+	public void testUeberwacheToTorSchliessenWhite(){
 		HumiditySensorStub.forceHumidity(VALUE_OVER_HUMIDITYMAX);
-		sensor.changeState("Ueberwache");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof TorSchliessen);
+		steuerung.changeState(States.UEBERWACHE);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof TorSchliessen);
 	}
 	
 	/**
 	 * Transition from TorSchliessen to PumpenEinschalten
 	 */
 	@Test
-	public void testTorSchliessenToPumpenEinschalten(){
+	public void testTorSchliessenToPumpenEinschaltenWhite(){
 		HumiditySensorStub.forceHumidity(VALUE_OVER_HUMIDITYMAX);
-		sensor.changeState("TorSchliessen");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof PumpenEinschalten);
+		steuerung.changeState(States.TOR_SCHLIESSEN);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof PumpenEinschalten);
 	}
 	
 	/**
 	 * Transition from PumpenEinschalten to FehlerFestgestellt
 	 */
 	@Test
-	public void testPumpenEinschaltenToFehlerFestgestellt(){
+	public void testPumpenEinschaltenToFehlerFestgestelltWhite(){
 		HumiditySensorStub.forceHumidity(VALUE_OVER_HUMIDITYMAX);
 		((PumpStub) pumpA).setNeverGoOnline(true);
 		((PumpStub) pumpB).setNeverGoOnline(true);
-		sensor.changeState("PumpenEinschalten");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof FehlerFestgestellt);
+		steuerung.changeState(States.PUMPEN_EINSCHALTEN);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof FehlerFestgestellt);
 	}
 	
 	/**
 	 * Transition from PumpenEinschalten to TorZuPumpeAn
 	 */
 	@Test
-	public void testPumpenEinschaltenToTorZuPumpeAn(){
+	public void testPumpenEinschaltenToTorZuPumpeAnWhite(){
 		HumiditySensorStub.forceHumidity(VALUE_OVER_HUMIDITYMAX);
 		((PumpStub) pumpA).setNeverGoOnline(false);
 		((PumpStub) pumpB).setNeverGoOnline(false);
-		sensor.changeState("PumpenEinschalten");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof TorZuPumpeAn);
+		((PumpStub) pumpA).set_forceActivation(true);
+		((PumpStub) pumpB).set_forceActivation(true);
+		steuerung.changeState(States.PUMPEN_EINSCHALTEN);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof TorZuPumpeAn);
 	}
 	
 	/**
 	 * Transition from TorZuPumpeAn to TorOeffnenPumpenAbschalten
 	 */
 	@Test
-	public void testFromTorZuPumpeAnToTorOeffnenPumpenAbschalten(){
+	public void testFromTorZuPumpeAnToTorOeffnenPumpenAbschaltenWhite(){
 		HumiditySensorStub.forceHumidity(VALUE_OVER_HUMIDITYMAX);
-		((PumpStub) pumpA).setNeverGoOnline(false);
-		((PumpStub) pumpB).setNeverGoOnline(false);
-		sensor.changeState("TorZuPumpeAn");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof TorOeffnenPumpenAbschalten);
+		steuerung.changeState(States.TOR_ZU_PUMPEN_AN);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof TorOeffnenPumpenAbschalten);
 	}
 	
 	/**
 	 * Transition from FehlerFestgestellt to TorOeffnenPumpenAbschalten
 	 */
 	@Test
-	public void testFromFehlerFestgestelltToTorOeffnenPumpenAbschalten(){
+	public void testFromFehlerFestgestelltToTorOeffnenPumpenAbschaltenWhite(){
 		HumiditySensorStub.forceHumidity(VALUE_OVER_HUMIDITYMAX);
-		((PumpStub) pumpA).setNeverGoOnline(true);
-		((PumpStub) pumpB).setNeverGoOnline(true);
-		sensor.changeState("FehlerFestgestellt");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof TorOeffnenPumpenAbschalten);
+		steuerung.changeState(States.FEHLER_FESTGESTELLT);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof TorOeffnenPumpenAbschalten);
 	}
 	
 	/**
 	 * Transition from TorOeffnenPumpenAbschalten to Ueberwache
 	 */
 	@Test
-	public void testFromTorOeffnenPumpenAbschaltenToUeberwache(){
+	public void testFromTorOeffnenPumpenAbschaltenToUeberwacheWhite(){
 		HumiditySensorStub.forceHumidity(VALUE_BETWEEN_HUMIDITYLIMITS);
-		sensor.changeState("TorOeffnenPumpenAbschalten");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof Ueberwache);
+		steuerung.changeState(States.TOR_OEFFNEN_PUMPEN_ABSCHALTEN);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Ueberwache);
 	}
 	
 	/**
 	 * Transition from TorOeffnenPumpenAbschalten to Fehler
 	 */
 	@Test
-	public void testFromTorOeffnenPumpenAbschaltenToFehler(){
-		HumiditySensorStub.forceHumidity(VALUE_OVER_HUMIDITYMAX);
-		sensor.changeState("TorOeffnenPumpenAbschalten");
-		sensor.setErrorFlag(true);
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof Fehler);
+	public void testFromTorOeffnenPumpenAbschaltenToFehlerWhite(){
+		steuerung.changeState(States.TOR_OEFFNEN_PUMPEN_ABSCHALTEN);
+		steuerung.setErrorFlag(true);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Fehler);
 	}
 	
 	/**
-	 * Transition from Fehler to Fehler no possible test?
+	 * Transition from Fehler to Fehler
 	 */
 	@Test
-	public void testFromFehlerToFehler(){
-		sensor.changeState("Fehler");
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof Fehler);
+	public void testFromFehlerToFehlerWhite(){
+		steuerung.changeState(States.FEHLER);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Fehler);
 	}
 	
 	
@@ -171,21 +184,119 @@ public class FSMImplementationTest {
 	 * Transition from Fehler to Ueberwache
 	 */
 	@Test
-	public void testFromFehlerToUeberwache(){
-		sensor.changeState("Fehler");
-		sensor.getOperatorPanel().pressButton();
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof Ueberwache);
+	public void testFromFehlerToUeberwacheWhite(){
+		steuerung.changeState(States.FEHLER);
+		steuerung.getOperatorPanel().pressButton();
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Ueberwache);
 	}
 	
 	/**
 	 * Just to get covered default doAction
 	 */
 	@Test
-	public void testOfError(){
-		sensor.changeState("Dummy");
-		sensor.getOperatorPanel().pressButton();
-		sensor.getCurrent().doAction(sensor);
-		assertTrue(sensor.getCurrent() instanceof Dummy);
+	public void testOfErrorWhite(){
+		steuerung.changeState(States.DUMMY);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Dummy);
+	}
+	
+	/**
+	 * -----------------------------BLACKBOX - KONFORMANZ-----------------------------
+	 */
+	
+	/**
+	 * Transition possibilities from Ueberwache
+	 */
+	@Test
+	public void testHumidityLowerMinBlack() {
+		steuerung.changeState(States.UEBERWACHE);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof HumidityLow   || 
+				   steuerung.getCurrent() instanceof TorSchliessen ||
+				   steuerung.getCurrent() instanceof Ueberwache);
+	}
+	
+	/**
+	 * Transition possibilities from HumidityLow
+	 */
+	@Test
+	public void testHumidityLowToUeberwacheBlack(){
+		steuerung.changeState(States.HUMIDITY_LOW);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Ueberwache);
+	}
+	
+	/**
+	 * Transition possibilities from TorSchliessen
+	 */
+	@Test
+	public void testTorSchliessenToPumpenEinschaltenBlack(){
+		steuerung.changeState(States.TOR_SCHLIESSEN);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof PumpenEinschalten);
+	}
+	
+	/**
+	 * Transition possibilities from PumpenEinschalten
+	 */
+	@Test
+	public void testPumpenEinschaltenToFehlerFestgestelltBlack(){
+		steuerung.changeState(States.PUMPEN_EINSCHALTEN);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof FehlerFestgestellt ||
+				   steuerung.getCurrent() instanceof TorZuPumpeAn);
+	}
+	
+	/**
+	 * Transition possibilities from TorZuPumpeAn
+	 */
+	@Test
+	public void testFromTorZuPumpeAnToTorOeffnenPumpenAbschaltenBlack(){
+		steuerung.changeState(States.TOR_ZU_PUMPEN_AN);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof TorOeffnenPumpenAbschalten);
+	}
+	
+	/**
+	 * Transition possibilities from FehlerFestgestellt
+	 */
+	@Test
+	public void testFromFehlerFestgestelltToTorOeffnenPumpenAbschaltenBlack(){
+		steuerung.changeState(States.FEHLER_FESTGESTELLT);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof TorOeffnenPumpenAbschalten);
+	}
+	
+	/**
+	 * Transition possibilities from TorOeffnenPumpenAbschalten
+	 */
+	@Test
+	public void testFromTorOeffnenPumpenAbschaltenToUeberwacheBlack(){
+		steuerung.changeState(States.TOR_OEFFNEN_PUMPEN_ABSCHALTEN);
+	    steuerung.setErrorFlag(getRandomBoolean());
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Ueberwache ||
+				   steuerung.getCurrent() instanceof Fehler);
+	}
+	
+	/**
+	 * Transition possibilities from Fehler
+	 */
+	@Test
+	public void testFromFehlerToFehlerBlack(){
+		steuerung.changeState(States.FEHLER);
+		if(getRandomBoolean())
+		{
+			operatorPanel.pressButton();
+		}
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Fehler ||
+				   steuerung.getCurrent() instanceof Ueberwache);
+	}
+	
+	public boolean getRandomBoolean()
+	{
+		return Math.random() < 0.5 ? true : false;
 	}
 }

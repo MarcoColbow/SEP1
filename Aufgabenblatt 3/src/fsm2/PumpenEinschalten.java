@@ -8,9 +8,9 @@ private ITimer timer = new TimerStub();
 
 
     @Override
-    public void doAction(Steuerung sensor){
-        sensor.getPumpA().sendActivate();
-        sensor.getPumpB().sendActivate();
+    public void doAction(Steuerung steuerung){
+        steuerung.getPumpA().sendActivate();
+        steuerung.getPumpB().sendActivate();
         
         timer.startTime(5);
         
@@ -19,13 +19,13 @@ private ITimer timer = new TimerStub();
 	        
         }
         
-        if (sensor.getPumpA().receivedActivated() && sensor.getPumpB().receivedActivated())
+        if (steuerung.getPumpA().receivedActivated() && steuerung.getPumpB().receivedActivated())
         {
-            sensor.changeState("TorZuPumpeAn");
+            steuerung.changeState(States.TOR_ZU_PUMPEN_AN);
         }
         else
         {
-        	sensor.changeState("FehlerFestgestellt");
+        	steuerung.changeState(States.FEHLER_FESTGESTELLT);
         }
     }
 }

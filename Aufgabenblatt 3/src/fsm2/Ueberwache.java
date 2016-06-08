@@ -1,14 +1,14 @@
 package fsm2;
 
 public class Ueberwache extends State {
-
+	
     @Override
-    public void doAction(Steuerung sensor){
-        if(sensor.getSensor().getHumidity() > sensor.getUpperBound()){
-            sensor.changeState("TorSchliessen");
+    public void doAction(Steuerung steuerung){
+        if(steuerung.getSensor().getHumidity() > steuerung.getUpperBound()){
+            steuerung.changeState(States.TOR_SCHLIESSEN);
         }
-        else if (sensor.getSensor().getHumidity() < sensor.getLowerBound()){
-            sensor.changeState("HumidityLow");
+        else if (steuerung.getSensor().getHumidity() < steuerung.getLowerBound()){
+            steuerung.changeState(States.HUMIDITY_LOW);
         }
     }
 }

@@ -3,10 +3,10 @@ package fsm2;
 public class Fehler extends State {
 	
     @Override
-	public void doAction(Steuerung sensor) {
-    	if (sensor.getOperatorPanel().receivedAcknowledgement())
+	public void doAction(Steuerung steuerung) {
+    	if (steuerung.getOperatorPanel().receivedAcknowledgement())
     	{
-    		sensor.changeState("Ueberwache");
+    		steuerung.changeState(States.UEBERWACHE);
     	}
 	}
 }
