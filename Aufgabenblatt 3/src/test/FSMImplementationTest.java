@@ -192,6 +192,10 @@ public class FSMImplementationTest {
 	}
 	
 	/**
+	 * -----------------------------WHITEBOX - ROBUSTHEIT-----------------------------
+	 */
+	
+	/**
 	 * Just to get covered default doAction
 	 */
 	@Test
@@ -294,6 +298,20 @@ public class FSMImplementationTest {
 		assertTrue(steuerung.getCurrent() instanceof Fehler ||
 				   steuerung.getCurrent() instanceof Ueberwache);
 	}
+	
+	/**
+	 * -----------------------------BLACKBOXBOX - ROBUSTHEIT-----------------------------
+	 */
+	/**
+	 * Just to get covered default doAction(actually same as above...)
+	 */
+	@Test
+	public void testOfErrorBlack(){
+		steuerung.changeState(States.DUMMY);
+		steuerung.getCurrent().doAction(steuerung);
+		assertTrue(steuerung.getCurrent() instanceof Dummy);
+	}
+	
 	
 	public boolean getRandomBoolean()
 	{
